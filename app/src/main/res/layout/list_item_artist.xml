@@ -21,7 +21,3 @@
         android:layout_toEndOf="@+id/list_item_artist_imageView"
         android:paddingLeft="16dp" />
 </RelativeLayout>
-<!--
-
-</TextView>
--->

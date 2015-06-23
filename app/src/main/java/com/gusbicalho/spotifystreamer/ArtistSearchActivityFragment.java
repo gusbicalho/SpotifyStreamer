@@ -85,7 +85,10 @@ public class ArtistSearchActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Artist> artists) {
             artistSearchListAdapter.clear();
-            artistSearchListAdapter.addAll(artists);
+            if (artists.size() == 0)
+                Toast.makeText(getActivity(), getString(R.string.artistSearch_fail_message), Toast.LENGTH_SHORT).show();
+            else
+                artistSearchListAdapter.addAll(artists);
             View rootView = getView();
             ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
             artistSearchListView.setVisibility(View.VISIBLE);

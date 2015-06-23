@@ -22,13 +22,18 @@ public class ArtistDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_artist_detail);
         artistName = getIntent().getStringExtra(EXTRA_NAME);
         artistId = getIntent().getStringExtra(EXTRA_ID);
-        setTitle(artistName);
+        getSupportActionBar().setSubtitle(artistName);
     }
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
         View rootView = super.onCreateView(parent, name, context, attrs);
         return rootView;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
     }
 
     @Override
