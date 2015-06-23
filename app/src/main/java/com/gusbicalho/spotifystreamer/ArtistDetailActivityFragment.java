@@ -1,6 +1,5 @@
 package com.gusbicalho.spotifystreamer;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,12 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Track;
 
 
 /**
@@ -21,8 +25,9 @@ import java.util.ArrayList;
  */
 public class ArtistDetailActivityFragment extends Fragment {
 
-    private String artistName;
-    private ArrayAdapter<String> songListAdapter;
+    private SpotifyService spotifyService = new SpotifyApi().getService();
+    private String artistName, artistId;
+    private TrackArrayAdapter trackListAdapter;
 
     public ArtistDetailActivityFragment() {
     }
@@ -30,7 +35,8 @@ public class ArtistDetailActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        artistName = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        artistName = getActivity().getIntent().getStringExtra(ArtistDetailActivity.EXTRA_NAME);
+        artistId = getActivity().getIntent().getStringExtra(ArtistDetailActivity.EXTRA_ID);
     }
 
     @Override
@@ -38,15 +44,13 @@ public class ArtistDetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.fragment_artist_detail, container, false);
 
-        songListAdapter = new ArrayAdapter<String>(
-                getActivity(), R.layout.list_item_artist,
-                R.id.list_item_artist_textView, new ArrayList<String>());
+        trackListAdapter = new TrackArrayAdapter(getActivity(), new ArrayList<Track>());
         ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
-        artistSearchListView.setAdapter(songListAdapter);
+        artistSearchListView.setAdapter(trackListAdapter);
         artistSearchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String listItem = songListAdapter.getItem(position);
+                String listItem = trackListAdapter.getItem(position).name;
                 Toast.makeText(getActivity(), listItem, Toast.LENGTH_SHORT).show();
             }
         });
@@ -56,38 +60,33 @@ public class ArtistDetailActivityFragment extends Fragment {
 
     @Override
     public void onStart() {
-        new SearchSongsTask().execute(artistName);
+        super.onStart();
+        new SearchTracksTask().execute(artistId);
     }
 
-    private class SearchSongsTask extends AsyncTask<String, Void, String[]> {
+    private class SearchTracksTask extends AsyncTask<String, Void, List<Track>> {
 
         @Override
         protected void onPreExecute() {
             View rootView = getView();
-            ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
+            ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
             artistSearchListView.setVisibility(View.GONE);
-            ProgressBar artistSearchProgressBar = (ProgressBar) rootView.findViewById(R.id.artistSearch_progressBar);
+            ProgressBar artistSearchProgressBar = (ProgressBar) rootView.findViewById(R.id.artistDetail_progressBar);
             artistSearchProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected String[] doInBackground(String... params) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return new String[]{
-                    "Viva la Vida", "A Sky Full of Stories", "The Scientist",
-                    "Fix You", "Yellow",
-                    "Paradise", "Supermassive Buracororo", "Snarf"
-            };
+        protected List<Track> doInBackground(String... params) {
+            String id = params[0];
+            HashMap<String, Object> query = new HashMap<>();
+            query.put(SpotifyService.COUNTRY, "BR");
+            return spotifyService.getArtistTopTrack(id, query).tracks;
         }
 
         @Override
-        protected void onPostExecute(String[] strings) {
-            songListAdapter.clear();
-            songListAdapter.addAll(strings);
+        protected void onPostExecute(List<Track> tracks) {
+            trackListAdapter.clear();
+            trackListAdapter.addAll(tracks);
             View rootView = getView();
             ListView songListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
             songListView.setVisibility(View.VISIBLE);

@@ -18,14 +18,18 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.ArtistsPager;
+import kaaes.spotify.webapi.android.models.Pager;
 
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class ArtistSearchActivityFragment extends Fragment {
-
-    private ArrayAdapter<String> artistSearchListAdapter;
+    private SpotifyService spotifyService = new SpotifyApi().getService();
+    private ArtistArrayAdapter artistSearchListAdapter;
 
     public ArtistSearchActivityFragment() {
     }
@@ -44,17 +48,16 @@ public class ArtistSearchActivityFragment extends Fragment {
             }
         });
 
-        artistSearchListAdapter = new ArrayAdapter<String>(
-                getActivity(), R.layout.list_item_artist,
-                R.id.list_item_artist_textView, new ArrayList<String>());
+        artistSearchListAdapter = new ArtistArrayAdapter(getActivity(), new ArrayList<Artist>());
         ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
         artistSearchListView.setAdapter(artistSearchListAdapter);
         artistSearchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String listItem = artistSearchListAdapter.getItem(position);
+                Artist artist = artistSearchListAdapter.getItem(position);
                 Intent detailIntent = new Intent(getActivity(), ArtistDetailActivity.class);
-                detailIntent.putExtra(Intent.EXTRA_TEXT, listItem);
+                detailIntent.putExtra(ArtistDetailActivity.EXTRA_NAME, artist.name);
+                detailIntent.putExtra(ArtistDetailActivity.EXTRA_ID, artist.id);
                 startActivity(detailIntent);
             }
         });
@@ -62,7 +65,7 @@ public class ArtistSearchActivityFragment extends Fragment {
         return rootView;
     }
 
-    private class SearchArtistTask extends AsyncTask<String, Void, String[]> {
+    private class SearchArtistTask extends AsyncTask<String, Void, List<Artist>> {
 
         @Override
         protected void onPreExecute() {
@@ -74,24 +77,15 @@ public class ArtistSearchActivityFragment extends Fragment {
         }
 
         @Override
-        protected String[] doInBackground(String... params) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return new String[]{
-                    "Coldplay", "Coldplay & Lele", "Coldplay & Rihanna",
-                    "Various Artists - Coldplay Tribute", "Marcelo Cold Prey",
-                    "Delícia de Coldplay", "Supercold Play", "Playstation One",
-                    "Playstation Two", "Preisteixo"
-            };
+        protected List<Artist> doInBackground(String... params) {
+            String search = params[0];
+            return spotifyService.searchArtists(search).artists.items;
         }
 
         @Override
-        protected void onPostExecute(String[] strings) {
+        protected void onPostExecute(List<Artist> artists) {
             artistSearchListAdapter.clear();
-            artistSearchListAdapter.addAll(strings);
+            artistSearchListAdapter.addAll(artists);
             View rootView = getView();
             ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
             artistSearchListView.setVisibility(View.VISIBLE);

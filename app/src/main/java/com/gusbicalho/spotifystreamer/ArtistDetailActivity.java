@@ -12,14 +12,16 @@ import android.view.View;
 
 
 public class ArtistDetailActivity extends AppCompatActivity {
-
-    private String artistName;
+    public static final String EXTRA_NAME = ArtistDetailActivity.class.getName()+".EXTRA_NAME";
+    public static final String EXTRA_ID = ArtistDetailActivity.class.getName()+".EXTRA_ID";
+    private String artistName, artistId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
-        artistName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        artistName = getIntent().getStringExtra(EXTRA_NAME);
+        artistId = getIntent().getStringExtra(EXTRA_ID);
         setTitle(artistName);
     }
 
