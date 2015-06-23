@@ -11,11 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -58,10 +56,10 @@ public class ArtistDetailActivityFragment extends Fragment {
 
     @Override
     public void onStart() {
-        new SearchArtistTask().execute(artistName);
+        new SearchSongsTask().execute(artistName);
     }
 
-    private class SearchArtistTask extends AsyncTask<String, Void, String[]> {
+    private class SearchSongsTask extends AsyncTask<String, Void, String[]> {
 
         @Override
         protected void onPreExecute() {
