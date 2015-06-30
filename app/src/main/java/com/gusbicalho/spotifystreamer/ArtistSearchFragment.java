@@ -27,11 +27,11 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Pager;
 
 
-public class ArtistSearchActivityFragment extends Fragment {
+public class ArtistSearchFragment extends Fragment {
     private SpotifyService spotifyService = new SpotifyApi().getService();
     private ArtistArrayAdapter artistSearchListAdapter;
 
-    public ArtistSearchActivityFragment() {
+    public ArtistSearchFragment() {
     }
 
     @Override
@@ -55,14 +55,15 @@ public class ArtistSearchActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Artist artist = artistSearchListAdapter.getItem(position);
-                Intent detailIntent = new Intent(getActivity(), ArtistDetailActivity.class);
-                detailIntent.putExtra(ArtistDetailActivity.EXTRA_NAME, artist.name);
-                detailIntent.putExtra(ArtistDetailActivity.EXTRA_ID, artist.id);
-                startActivity(detailIntent);
+                ((Callback) getActivity()).onArtistSelected(artist);
             }
         });
 
         return rootView;
+    }
+
+    public interface Callback {
+        public void onArtistSelected(Artist artist);
     }
 
     private class SearchArtistTask extends AsyncTask<String, Void, List<Artist>> {

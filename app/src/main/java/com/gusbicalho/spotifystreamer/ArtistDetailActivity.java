@@ -9,11 +9,15 @@ import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import kaaes.spotify.webapi.android.models.Track;
 
 
-public class ArtistDetailActivity extends AppCompatActivity {
+public class ArtistDetailActivity extends AppCompatActivity implements ArtistDetailFragment.Callback {
     public static final String EXTRA_NAME = ArtistDetailActivity.class.getName()+".EXTRA_NAME";
     public static final String EXTRA_ID = ArtistDetailActivity.class.getName()+".EXTRA_ID";
+    private static final String DETAILFRAGMENT_TAG = "DETAILFRAGMENT_TAG";
     private String artistName, artistId;
 
     @Override
@@ -23,6 +27,13 @@ public class ArtistDetailActivity extends AppCompatActivity {
         artistName = getIntent().getStringExtra(EXTRA_NAME);
         artistId = getIntent().getStringExtra(EXTRA_ID);
         getSupportActionBar().setSubtitle(artistName);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_artist_detail_container,
+                            ArtistDetailFragment.createInstance(artistId, artistName),
+                            DETAILFRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     @Override
@@ -56,5 +67,10 @@ public class ArtistDetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTrackSelected(Track track) {
+        Toast.makeText(this, track.name, Toast.LENGTH_SHORT).show();
     }
 }

@@ -17,26 +17,34 @@ import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Track;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ArtistDetailActivityFragment extends Fragment {
+public class ArtistDetailFragment extends Fragment {
+    public static final String ARGUMENT_ARTIST_NAME = "ARGUMENT_ARTIST_NAME";
+    public static final String ARGUMENT_ARTIST_ID = "ARGUMENT_ARTIST_ID";
+    private SpotifyService mSpotifyService = new SpotifyApi().getService();
+    private String mArtistName, mArtistId;
+    private TrackArrayAdapter mTrackListAdapter;
 
-    private SpotifyService spotifyService = new SpotifyApi().getService();
-    private String artistName, artistId;
-    private TrackArrayAdapter trackListAdapter;
-
-    public ArtistDetailActivityFragment() {
+    public static ArtistDetailFragment createInstance(String artistId, String artistName) {
+        Bundle args = new Bundle();
+        args.putString(ARGUMENT_ARTIST_NAME, artistName);
+        args.putString(ARGUMENT_ARTIST_ID, artistId);
+        ArtistDetailFragment df = new ArtistDetailFragment();
+        df.setArguments(args);
+        return df;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        artistName = getActivity().getIntent().getStringExtra(ArtistDetailActivity.EXTRA_NAME);
-        artistId = getActivity().getIntent().getStringExtra(ArtistDetailActivity.EXTRA_ID);
+        mArtistName = getArguments().getString(ARGUMENT_ARTIST_NAME);
+        mArtistId = getArguments().getString(ARGUMENT_ARTIST_ID);
     }
 
     @Override
@@ -44,14 +52,13 @@ public class ArtistDetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.fragment_artist_detail, container, false);
 
-        trackListAdapter = new TrackArrayAdapter(getActivity(), new ArrayList<Track>());
+        mTrackListAdapter = new TrackArrayAdapter(getActivity(), new ArrayList<Track>());
         ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
-        artistSearchListView.setAdapter(trackListAdapter);
+        artistSearchListView.setAdapter(mTrackListAdapter);
         artistSearchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String listItem = trackListAdapter.getItem(position).name;
-                Toast.makeText(getActivity(), listItem, Toast.LENGTH_SHORT).show();
+                ((Callback) getActivity()).onTrackSelected(mTrackListAdapter.getItem(position));
             }
         });
 
@@ -61,7 +68,11 @@ public class ArtistDetailActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        new SearchTracksTask().execute(artistId);
+        new SearchTracksTask().execute(mArtistId);
+    }
+
+    public interface Callback {
+        public void onTrackSelected(Track track);
     }
 
     private class SearchTracksTask extends AsyncTask<String, Void, List<Track>> {
@@ -80,13 +91,13 @@ public class ArtistDetailActivityFragment extends Fragment {
             String id = params[0];
             HashMap<String, Object> query = new HashMap<>();
             query.put(SpotifyService.COUNTRY, "BR");
-            return spotifyService.getArtistTopTrack(id, query).tracks;
+            return mSpotifyService.getArtistTopTrack(id, query).tracks;
         }
 
         @Override
         protected void onPostExecute(List<Track> tracks) {
-            trackListAdapter.clear();
-            trackListAdapter.addAll(tracks);
+            mTrackListAdapter.clear();
+            mTrackListAdapter.addAll(tracks);
             View rootView = getView();
             ListView songListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
             songListView.setVisibility(View.VISIBLE);
