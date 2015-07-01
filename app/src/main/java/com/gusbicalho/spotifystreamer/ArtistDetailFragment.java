@@ -3,6 +3,8 @@ package com.gusbicalho.spotifystreamer;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +50,16 @@ public class ArtistDetailFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (getActivity() instanceof AppCompatActivity) {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setSubtitle(mArtistName);
+        }
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.fragment_artist_detail, container, false);
@@ -72,7 +84,7 @@ public class ArtistDetailFragment extends Fragment {
     }
 
     public interface Callback {
-        public void onTrackSelected(Track track);
+        void onTrackSelected(Track track);
     }
 
     private class SearchTracksTask extends AsyncTask<String, Void, List<Track>> {
@@ -80,6 +92,7 @@ public class ArtistDetailFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             View rootView = getView();
+            assert rootView != null;
             ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
             artistSearchListView.setVisibility(View.GONE);
             ProgressBar artistSearchProgressBar = (ProgressBar) rootView.findViewById(R.id.artistDetail_progressBar);
@@ -99,6 +112,7 @@ public class ArtistDetailFragment extends Fragment {
             mTrackListAdapter.clear();
             mTrackListAdapter.addAll(tracks);
             View rootView = getView();
+            assert rootView != null;
             ListView songListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
             songListView.setVisibility(View.VISIBLE);
             ProgressBar artistDetailProgressBar = (ProgressBar) rootView.findViewById(R.id.artistDetail_progressBar);

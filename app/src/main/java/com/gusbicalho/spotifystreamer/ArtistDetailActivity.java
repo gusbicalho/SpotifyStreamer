@@ -2,6 +2,7 @@ package com.gusbicalho.spotifystreamer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +27,6 @@ public class ArtistDetailActivity extends AppCompatActivity implements ArtistDet
         setContentView(R.layout.activity_artist_detail);
         artistName = getIntent().getStringExtra(EXTRA_NAME);
         artistId = getIntent().getStringExtra(EXTRA_ID);
-        getSupportActionBar().setSubtitle(artistName);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_artist_detail_container,
@@ -37,9 +37,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements ArtistDet
     }
 
     @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-        View rootView = super.onCreateView(parent, name, context, attrs);
-        return rootView;
+    public View onCreateView(View parent, String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+        return super.onCreateView(parent, name, context, attrs);
     }
 
     @Override
