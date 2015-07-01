@@ -63,7 +63,7 @@ public class ArtistSearchFragment extends Fragment {
     }
 
     public interface Callback {
-        public void onArtistSelected(Artist artist);
+        void onArtistSelected(Artist artist);
     }
 
     private class SearchArtistTask extends AsyncTask<String, Void, List<Artist>> {
@@ -71,27 +71,38 @@ public class ArtistSearchFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             View rootView = getView();
+            assert rootView != null;
             ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
+            assert artistSearchListView != null;
             artistSearchListView.setVisibility(View.GONE);
             ProgressBar artistSearchProgressBar = (ProgressBar) rootView.findViewById(R.id.artistSearch_progressBar);
+            assert artistSearchProgressBar != null;
             artistSearchProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected List<Artist> doInBackground(String... params) {
             String search = params[0];
-            return spotifyService.searchArtists(search).artists.items;
+            try {
+                return spotifyService.searchArtists(search).artists.items;
+            } catch (RuntimeException e){
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(List<Artist> artists) {
             artistSearchListAdapter.clear();
-            if (artists.size() == 0)
+            if (artists == null)
+                Toast.makeText(getActivity(), R.string.search_error_message, Toast.LENGTH_SHORT).show();
+            else if (artists.size() == 0)
                 Toast.makeText(getActivity(), getString(R.string.artistSearch_fail_message), Toast.LENGTH_SHORT).show();
             else
                 artistSearchListAdapter.addAll(artists);
             View rootView = getView();
+            assert rootView != null;
             ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
+            assert artistSearchListView != null;
             artistSearchListView.setVisibility(View.VISIBLE);
             ProgressBar artistSearchProgressBar = (ProgressBar) rootView.findViewById(R.id.artistSearch_progressBar);
             artistSearchProgressBar.setVisibility(View.GONE);

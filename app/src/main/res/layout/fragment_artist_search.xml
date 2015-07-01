@@ -5,24 +5,29 @@
     android:layout_height="match_parent"
     tools:context=".ArtistSearchActivityFragment">
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:layout_gravity="center_horizontal">
+        android:paddingLeft="@dimen/abc_edit_text_inset_horizontal_material"
+        android:paddingRight="@dimen/abc_edit_text_inset_horizontal_material"
+        android:gravity="center_vertical">
 
         <EditText
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/artistSearch_search_editText"
-            android:layout_gravity="center" />
-    </FrameLayout>
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:drawableEnd="@android:drawable/ic_menu_search"
+            android:drawableRight="@android:drawable/ic_menu_search"
+            android:singleLine="true" />
+
+    </LinearLayout>
 
     <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/abc_action_button_min_height_material"
+        android:layout_height="@dimen/abc_action_button_min_height_material"
         android:id="@+id/artistSearch_progressBar"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"
@@ -30,7 +35,9 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:id="@+id/artistSearch_list_listView"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1" />
+
 </LinearLayout>
