@@ -30,9 +30,9 @@ import kaaes.spotify.webapi.android.models.Pager;
 public class ArtistSearchFragment extends Fragment {
     private SpotifyService spotifyService = new SpotifyApi().getService();
     private ArtistArrayAdapter artistSearchListAdapter;
+    private ListView mArtistSearchListView;
 
-    public ArtistSearchFragment() {
-    }
+    public ArtistSearchFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,9 +49,9 @@ public class ArtistSearchFragment extends Fragment {
         });
 
         artistSearchListAdapter = new ArtistArrayAdapter(getActivity(), new ArrayList<Artist>());
-        ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
-        artistSearchListView.setAdapter(artistSearchListAdapter);
-        artistSearchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mArtistSearchListView = (ListView) rootView.findViewById(R.id.artistSearch_list_listView);
+        mArtistSearchListView.setAdapter(artistSearchListAdapter);
+        mArtistSearchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Artist artist = artistSearchListAdapter.getItem(position);
@@ -60,6 +60,10 @@ public class ArtistSearchFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    public void setListChoiceMode(int mode) {
+        mArtistSearchListView.setChoiceMode(mode);
     }
 
     public interface Callback {

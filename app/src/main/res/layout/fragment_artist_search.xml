@@ -21,7 +21,9 @@
             android:layout_weight="1"
             android:drawableEnd="@android:drawable/ic_menu_search"
             android:drawableRight="@android:drawable/ic_menu_search"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:inputType="textPersonName"
+            android:hint="@string/search_hint" />
 
     </LinearLayout>
 

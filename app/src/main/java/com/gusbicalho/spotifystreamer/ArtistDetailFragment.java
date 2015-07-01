@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +28,12 @@ import kaaes.spotify.webapi.android.models.Track;
  * A placeholder fragment containing a simple view.
  */
 public class ArtistDetailFragment extends Fragment {
+    private static final String LOG_TAG = ArtistDetailFragment.class.getSimpleName();
     public static final String ARGUMENT_ARTIST_NAME = "ARGUMENT_ARTIST_NAME";
     public static final String ARGUMENT_ARTIST_ID = "ARGUMENT_ARTIST_ID";
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
     private String mArtistName, mArtistId;
+    private boolean mLoaded = false;
     private TrackArrayAdapter mTrackListAdapter;
 
     public static ArtistDetailFragment createInstance(String artistId, String artistName) {
@@ -43,10 +46,24 @@ public class ArtistDetailFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(ARGUMENT_ARTIST_ID, mArtistId);
+        outState.putString(ARGUMENT_ARTIST_NAME, mArtistName);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArtistName = getArguments().getString(ARGUMENT_ARTIST_NAME);
-        mArtistId = getArguments().getString(ARGUMENT_ARTIST_ID);
+        if (savedInstanceState == null) {
+            mArtistName = getArguments().getString(ARGUMENT_ARTIST_NAME);
+            mArtistId = getArguments().getString(ARGUMENT_ARTIST_ID);
+            Log.v(LOG_TAG, "no savedInstanceState, loaded from arguments: "+mArtistName+" - "+mArtistId);
+        } else {
+            mArtistName = savedInstanceState.getString(ARGUMENT_ARTIST_NAME);
+            mArtistId = savedInstanceState.getString(ARGUMENT_ARTIST_ID);
+            Log.v(LOG_TAG, "loaded from savedInstanceState: "+mArtistName+" - "+mArtistId);
+        }
     }
 
     @Override
@@ -63,7 +80,6 @@ public class ArtistDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.fragment_artist_detail, container, false);
-
         mTrackListAdapter = new TrackArrayAdapter(getActivity(), new ArrayList<Track>());
         ListView artistSearchListView = (ListView) rootView.findViewById(R.id.artistDetail_listView);
         artistSearchListView.setAdapter(mTrackListAdapter);
@@ -73,14 +89,14 @@ public class ArtistDetailFragment extends Fragment {
                 ((Callback) getActivity()).onTrackSelected(mTrackListAdapter.getItem(position));
             }
         });
-
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        new SearchTracksTask().execute(mArtistId);
+        if (!mLoaded)
+            new SearchTracksTask().execute(mArtistId);
     }
 
     public interface Callback {
@@ -109,6 +125,7 @@ public class ArtistDetailFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Track> tracks) {
+            mLoaded = true;
             mTrackListAdapter.clear();
             mTrackListAdapter.addAll(tracks);
             View rootView = getView();

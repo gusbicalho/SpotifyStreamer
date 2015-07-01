@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import kaaes.spotify.webapi.android.models.Artist;
@@ -21,6 +22,10 @@ public class MainActivity extends AppCompatActivity implements ArtistSearchFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTwoPane = findViewById(R.id.fragment_artist_detail_container) != null;
+        if (!mTwoPane)
+            ((ArtistSearchFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_artist_search))
+                    .setListChoiceMode(ListView.CHOICE_MODE_NONE);
     }
 
     @Override
@@ -63,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements ArtistSearchFragm
 
     @Override
     public void onTrackSelected(Track track) {
-        Toast.makeText(this, track.name, Toast.LENGTH_SHORT).show();
+        Intent detailIntent = new Intent(this, PlayerActivity.class);
+        detailIntent.putExtra(PlayerActivity.EXTRA_ID, track.id);
+        startActivity(detailIntent);
     }
 }

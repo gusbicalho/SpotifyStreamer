@@ -19,7 +19,7 @@ public class PlayerActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_player_container,
-                            PlayerActivityFragment.createInstance(mTrackId),
+                            PlayerFragment.createInstance(mTrackId),
                             PLAYERFRAGMENT_TAG)
                     .commit();
         }

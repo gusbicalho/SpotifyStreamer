@@ -1,10 +1,12 @@
 package com.gusbicalho.spotifystreamer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +16,7 @@ import kaaes.spotify.webapi.android.models.Track;
 
 
 public class ArtistDetailActivity extends AppCompatActivity implements ArtistDetailFragment.Callback {
+    private static final String LOG_TAG = ArtistDetailActivity.class.getSimpleName();
     public static final String EXTRA_NAME = ArtistDetailActivity.class.getName()+".EXTRA_NAME";
     public static final String EXTRA_ID = ArtistDetailActivity.class.getName()+".EXTRA_ID";
     private static final String DETAILFRAGMENT_TAG = "DETAILFRAGMENT_TAG";
@@ -25,6 +28,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements ArtistDet
         setContentView(R.layout.activity_artist_detail);
         mArtistName = getIntent().getStringExtra(EXTRA_NAME);
         mArtistId = getIntent().getStringExtra(EXTRA_ID);
+        Log.v(LOG_TAG, "onCreate. savedInstanceState: "+savedInstanceState);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_artist_detail_container,
@@ -68,6 +72,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements ArtistDet
 
     @Override
     public void onTrackSelected(Track track) {
-        Toast.makeText(this, track.name, Toast.LENGTH_SHORT).show();
+        Intent detailIntent = new Intent(this, PlayerActivity.class);
+        detailIntent.putExtra(PlayerActivity.EXTRA_ID, track.id);
+        startActivity(detailIntent);
     }
 }
