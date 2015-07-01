@@ -1,9 +1,7 @@
 package com.gusbicalho.spotifystreamer;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
@@ -19,18 +17,18 @@ public class ArtistDetailActivity extends AppCompatActivity implements ArtistDet
     public static final String EXTRA_NAME = ArtistDetailActivity.class.getName()+".EXTRA_NAME";
     public static final String EXTRA_ID = ArtistDetailActivity.class.getName()+".EXTRA_ID";
     private static final String DETAILFRAGMENT_TAG = "DETAILFRAGMENT_TAG";
-    private String artistName, artistId;
+    private String mArtistName, mArtistId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
-        artistName = getIntent().getStringExtra(EXTRA_NAME);
-        artistId = getIntent().getStringExtra(EXTRA_ID);
+        mArtistName = getIntent().getStringExtra(EXTRA_NAME);
+        mArtistId = getIntent().getStringExtra(EXTRA_ID);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_artist_detail_container,
-                            ArtistDetailFragment.createInstance(artistId, artistName),
+                            ArtistDetailFragment.createInstance(mArtistId, mArtistName),
                             DETAILFRAGMENT_TAG)
                     .commit();
         }
